@@ -1,5 +1,7 @@
 package com.example.demo.api.model;
 
+import com.example.demo.api.model.Launch;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -55,4 +57,8 @@ public class VLAEntity {
 
     @Column(name = "TIMESTAMP")
     private Long timestamp;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "LAUNCH_ID", nullable = false)
+    private Launch launch;
 }
