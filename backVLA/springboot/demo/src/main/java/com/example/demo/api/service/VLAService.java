@@ -13,8 +13,9 @@ import org.springframework.web.client.RestTemplate;
 public class VLAService {
 
     private final VLARepository sensorRepository;
-    private final RestTemplate restTemplate = new RestTemplate();
+    private final RestTemplate restTemplate = new RestTemplate(); // ideal seria injetar via @Bean
 
+    //private static final String SENSOR_URL = "http://192.168.4.1/json"; // adicione http://
     private static final String SENSOR_URL = "http://localhost:8080/json";
 
     @Scheduled(fixedRate = 100)
@@ -23,45 +24,51 @@ public class VLAService {
 
         try {
             VLADTO dto = restTemplate.getForObject(SENSOR_URL, VLADTO.class);
-            System.out.println(dto);
 
-            if (dto != null && dto.getSensors() != null
-                    && dto.getSensors().getAltimetro() != null
-                    && dto.getSensors().getAcelerometro() != null) {
 
-                System.out.println("DADOS RECEBIDOS:");
-                System.out.println("Timestamp: " + dto.getTimestamp());
-                System.out.println("Altitude: " + dto.getSensors().getAltimetro().getAltitude());
-                System.out.println("Pressão: " + dto.getSensors().getAltimetro().getPressure());
-                System.out.println("AccX: " + dto.getSensors().getAcelerometro().getAccX());
-                System.out.println("AccY: " + dto.getSensors().getAcelerometro().getAccY());
-                System.out.println("AccZ: " + dto.getSensors().getAcelerometro().getAccZ());
-                System.out.println("GyroX: " + dto.getSensors().getAcelerometro().getGyroX());
-                System.out.println("GyroY: " + dto.getSensors().getAcelerometro().getGyroY());
-                System.out.println("GyroZ: " + dto.getSensors().getAcelerometro().getGyroZ());
-                System.out.println("Temp: " + dto.getSensors().getAcelerometro().getTemp());
-                System.out.println("Roll: " + dto.getSensors().getAcelerometro().getRoll());
-                System.out.println("Pitch: " + dto.getSensors().getAcelerometro().getPitch());
-                System.out.println("--------------------------------------");
 
-                VLAEntity entity = VLAEntity.builder()
-                        .altitude(dto.getSensors().getAltimetro().getAltitude())
-                        .pressure(dto.getSensors().getAltimetro().getPressure())
-                        .accX(dto.getSensors().getAcelerometro().getAccX())
-                        .accY(dto.getSensors().getAcelerometro().getAccY())
-                        .accZ(dto.getSensors().getAcelerometro().getAccZ())
-                        .gyroX(dto.getSensors().getAcelerometro().getGyroX())
-                        .gyroY(dto.getSensors().getAcelerometro().getGyroY())
-                        .gyroZ(dto.getSensors().getAcelerometro().getGyroZ())
-                        .temp(dto.getSensors().getAcelerometro().getTemp())
-                        .roll(dto.getSensors().getAcelerometro().getRoll())
-                        .pitch(dto.getSensors().getAcelerometro().getPitch())
-                        .timestamp(dto.getTimestamp())
-                        .build();
+            var sensors = dto.getSensors();
 
-                sensorRepository.save(entity);
-            }
 
+
+            System.out.println("DADOS RECEBIDOS:");
+            System.out.println("Timestamp: " + dto.getTimestamp());
+            System.out.println("Altitude (Altímetro): " + sensors.getAltimetro().getAltitude());
+            System.out.println("Pressão: " + sensors.getAltimetro().getPressure());
+            System.out.println("AccX: " + sensors.getAcelerometro().getAccX());
+            // você pode imprimir mais campos se quiser
+
+            VLAEntity entity = VLAEntity.builder()
+                    .altitude(sensors.getAltimetro().getAltitude())
+                    .pressure(sensors.getAltimetro().getPressure())
+                    .accX(sensors.getAcelerometro().getAccX())
+                    .accY(sensors.getAcelerometro().getAccY())
+                    .accZ(sensors.getAcelerometro().getAccZ())
+                    .gyroX(sensors.getAcelerometro().getGyroX())
+                    .gyroY(sensors.getAcelerometro().getGyroY())
+                    .gyroZ(sensors.getAcelerometro().getGyroZ())
+                    .temp(sensors.getAcelerometro().getTemp())
+                    .roll(sensors.getAcelerometro().getRoll())
+                    .pitch(sensors.getAcelerometro().getPitch())
+                    .voltageBase(sensors.getTensao().getVoltage_base().floatValue())
+                    .voltageRocket(sensors.getTensao().getVoltage_rocket().floatValue())
+                    .gpsLatitude(sensors.getGps().getLatitude().floatValue())
+                    .gpsLongitude(sensors.getGps().getLongitude().floatValue())
+                    .gpsAltitude(sensors.getGps().getAltitude().floatValue())
+                    .gpsDay(sensors.getGps().getDay())
+                    .gpsMonth(sensors.getGps().getMonth())
+                    .gpsYear(sensors.getGps().getYear())
+                    .gpsHour(sensors.getGps().getHour())
+                    .gpsMinute(sensors.getGps().getMinute())
+                    .gpsSecond(sensors.getGps().getSecond())
+                    .espNowChannel(sensors.getEsp_now_channel())
+                    .macAddress(sensors.getMac_address())
+                    .timestamp(dto.getTimestamp().floatValue())
+                    .build();
+
+
+            sensorRepository.save(entity);
+            System.out.println("Dados salvos com sucesso.");
         } catch (Exception e) {
             System.err.println("Erro ao buscar ou salvar dados do sensor: " + e.getMessage());
             e.printStackTrace();
