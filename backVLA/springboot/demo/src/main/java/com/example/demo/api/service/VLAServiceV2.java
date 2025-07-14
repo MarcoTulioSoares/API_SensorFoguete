@@ -1,6 +1,8 @@
 package com.example.demo.api.service;
 
+import com.example.demo.api.model.LancamentoEntity;
 import com.example.demo.api.model.VLAEntity;
+import com.example.demo.api.repository.LancamentoRepository;
 import com.example.demo.api.repository.VLARepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,5 +15,9 @@ public class VLAServiceV2 {
     private final VLARepository sensorRepository;
     public List<VLAEntity> listarTodos() {
         return sensorRepository.findAll();
+    }
+    private final LancamentoRepository lancamentoRepository;
+    public List<LancamentoEntity> listarTodosLancamentos() {
+        return lancamentoRepository.findAll();
     }
 }
