@@ -1,7 +1,10 @@
 package com.example.demo.api.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -18,11 +21,10 @@ public class LancamentoEntity {
     @Column(name = "ID_LANCAMENTO")
     private Integer idLancamento;
 
-    @Column(name = "ID_SENSOR_INICIAL")
-    private Integer idSensorInicial;
+    @OneToMany(mappedBy = "lancamento", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<VLAEntity> sensores;
 
-    @Column(name = "ID_SENSOR_FINAL")
-    private Integer idSensorFinal;
 
 
 }

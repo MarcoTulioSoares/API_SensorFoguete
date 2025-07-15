@@ -1,5 +1,6 @@
 package com.example.demo.api.dto;
 
+import com.example.demo.api.model.LancamentoEntity;
 import lombok.*;
 
 @Getter
@@ -15,4 +16,5 @@ public class SensorsDTO {
     private Integer esp_now_channel;
     private String mac_address;
     private Long timestamp;
+    private LancamentoEntity lancamento;
 }
