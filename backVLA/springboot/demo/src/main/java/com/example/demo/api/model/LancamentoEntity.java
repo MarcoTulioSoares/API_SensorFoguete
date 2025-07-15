@@ -3,7 +3,7 @@ package com.example.demo.api.model;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.util.Date;
 import java.util.List;
 
 @Getter
@@ -20,6 +20,12 @@ public class LancamentoEntity {
     @SequenceGenerator(name = "LancamentoSequence", sequenceName = "SEQ_LANCAMENTO", allocationSize = 1)
     @Column(name = "ID_LANCAMENTO")
     private Integer idLancamento;
+
+    @Column(name = "NOME_LANCAMENTO")
+    private String nome;
+
+    @Column(name = "DATA_LANCAMENTO")
+    private Date dataLancamento;
 
     @OneToMany(mappedBy = "lancamento", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference

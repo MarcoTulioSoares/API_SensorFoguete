@@ -5,6 +5,7 @@ import com.example.demo.api.model.VLAEntity;
 import com.example.demo.api.repository.LancamentoRepository;
 import com.example.demo.api.service.VLAService;
 import com.example.demo.api.service.VLAServiceV2;
+import com.example.demo.api.dto.LancamentoDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,9 +48,12 @@ public class VLAController {
     }
 
     @GetMapping(value = "/listarLancamentos")
-    public ResponseEntity<List<LancamentoEntity>> listarTodosLancamentos() {
+    public ResponseEntity<List<LancamentoDTO>> listarTodosLancamentos() {
         List<LancamentoEntity> lista = vlaServiceV2.listarTodosLancamentos();
-        return ResponseEntity.ok(lista);
+        List<LancamentoDTO> dtoList = lista.stream()
+            .map(l -> new LancamentoDTO(l.getIdLancamento(), l.getNome(), l.getDataLancamento()))
+            .toList();
+        return ResponseEntity.ok(dtoList);
     }
 
     @DeleteMapping("/deleta-lancamento/{id}")
