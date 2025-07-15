@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Date;
 
 
 @RestController
@@ -26,9 +27,9 @@ public class VLAController {
     private VLAServiceV2 vlaServiceV2;
 
     @PostMapping("/start")
-    public ResponseEntity<String> startScheduler() {
-        vlaService.startScheduler();
-        return ResponseEntity.ok("Scheduler iniciado");
+    public ResponseEntity<?> startScheduler() {
+        LancamentoEntity lancamento = vlaService.startSchedulerAndReturnLancamento();
+        return ResponseEntity.ok(java.util.Collections.singletonMap("idLancamento", lancamento.getIdLancamento()));
     }
 
     @PostMapping("/stop")
@@ -73,7 +74,24 @@ public class VLAController {
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
+    public static class UpdateLancamentoRequest {
+        public String nome;
+        public Date dataLancamento;
+    }
 
+    @PutMapping("/lancamento-id/{id}")
+    public ResponseEntity<LancamentoEntity> atualizarLancamento(@PathVariable int id, @RequestBody UpdateLancamentoRequest req) {
+        Optional<LancamentoEntity> lancamentoOpt = vlaServiceV2.buscarLancamentoPorId(id);
+        if (lancamentoOpt.isPresent()) {
+            LancamentoEntity lancamento = lancamentoOpt.get();
+            lancamento.setNome(req.nome);
+            lancamento.setDataLancamento(req.dataLancamento);
+            vlaServiceV2.salvarLancamento(lancamento);
+            return ResponseEntity.ok(lancamento);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 
 }

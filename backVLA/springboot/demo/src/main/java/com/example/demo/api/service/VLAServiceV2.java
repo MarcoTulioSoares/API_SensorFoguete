@@ -38,4 +38,8 @@ public class VLAServiceV2 {
         }
         return false;
     }
+
+    public LancamentoEntity salvarLancamento(LancamentoEntity lancamento) {
+        return lancamentoRepository.save(lancamento);
+    }
 }

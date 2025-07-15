@@ -54,6 +54,18 @@ public class VLAService {
         return task != null && !task.isCancelled();
     }
 
+    public LancamentoEntity startSchedulerAndReturnLancamento() {
+        if (task == null || task.isCancelled()) {
+            lancamentoAtual = lancamentoRepository.save(
+                    LancamentoEntity.builder().build()
+            );
+
+            task = scheduler.scheduleAtFixedRate(this::fetchAndSaveSensorData, 0, 100, TimeUnit.MILLISECONDS);
+            System.out.println("Scheduler iniciado. Lançamento ID: " + lancamentoAtual.getIdLancamento());
+        }
+        return lancamentoAtual;
+    }
+
     public void fetchAndSaveSensorData() {
         try {
             VLADTO dto = restTemplate.getForObject(SENSOR_URL, VLADTO.class);
