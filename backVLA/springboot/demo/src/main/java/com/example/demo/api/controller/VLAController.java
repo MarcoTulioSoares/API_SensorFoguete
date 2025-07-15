@@ -2,6 +2,7 @@ package com.example.demo.api.controller;
 
 import com.example.demo.api.model.LancamentoEntity;
 import com.example.demo.api.model.VLAEntity;
+import com.example.demo.api.repository.LancamentoRepository;
 import com.example.demo.api.service.VLAService;
 import com.example.demo.api.service.VLAServiceV2;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,10 +10,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+
 
 @RestController
 @RequestMapping("/api/VLA")
 public class VLAController {
+
 
     @Autowired
     private VLAService vlaService;
@@ -47,5 +51,26 @@ public class VLAController {
         List<LancamentoEntity> lista = vlaServiceV2.listarTodosLancamentos();
         return ResponseEntity.ok(lista);
     }
+
+    @DeleteMapping("/deleta-lancamento/{id}")
+    public ResponseEntity<String> excluirLancamento(@PathVariable int id) {
+        boolean excluido = vlaServiceV2.excluirLancamentoPorId(id);
+        if (excluido) {
+            return ResponseEntity.ok("Lançamento e sensores associados excluídos com sucesso.");
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/lancamento-id/{id}")
+    public ResponseEntity<LancamentoEntity> buscarLancamentoPorId(@PathVariable int id) {
+        return vlaServiceV2.buscarLancamentoPorId(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+
+
+
 }
 

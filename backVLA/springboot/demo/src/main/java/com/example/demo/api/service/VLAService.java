@@ -17,27 +17,28 @@ public class VLAService {
 
     private final VLARepository sensorRepository;
     private final LancamentoRepository lancamentoRepository;
-    private Integer idSensorInicial = null;
-    private Integer idSensorFinal = null;
-
 
     private final RestTemplate restTemplate = new RestTemplate(); // ideal: injetar com @Bean
 
     private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
     private ScheduledFuture<?> task;
-    //private static final String SENSOR_URL = "http://localhost:8080/json";
-    private static final String SENSOR_URL = "http://192.168.4.1/json";
+
+    //private static final String SENSOR_URL = "http://192.168.4.1/json";
+    private static final String SENSOR_URL = "http://localhost:8080/json";
+
+    private LancamentoEntity lancamentoAtual; // Novo controle
 
     // Inicia o agendamento
     public void startScheduler() {
         if (task == null || task.isCancelled()) {
-            idSensorInicial = null;
-            idSensorFinal = null;
+            lancamentoAtual = lancamentoRepository.save(
+                    LancamentoEntity.builder().build()
+            );
+
             task = scheduler.scheduleAtFixedRate(this::fetchAndSaveSensorData, 0, 100, TimeUnit.MILLISECONDS);
-            System.out.println("Scheduler iniciado manualmente.");
+            System.out.println("Scheduler iniciado. Lançamento ID: " + lancamentoAtual.getIdLancamento());
         }
     }
-
 
     // Encerra o agendamento
     public void stopScheduler() {
@@ -45,20 +46,9 @@ public class VLAService {
             task.cancel(true);
             System.out.println("Scheduler parado.");
 
-            if (idSensorInicial != null && idSensorFinal != null) {
-                LancamentoEntity lancamento = LancamentoEntity.builder()
-                        .idSensorInicial(idSensorInicial)
-                        .idSensorFinal(idSensorFinal)
-                        .build();
-
-                lancamentoRepository.save(lancamento);
-                System.out.println("Lançamento salvo com sucesso: " + lancamento);
-            } else {
-                System.out.println("IDs do lançamento não definidos, não foi possível salvar.");
-            }
+            lancamentoAtual = null; // Libera a referência
         }
     }
-
 
     public boolean isSchedulerRunning() {
         return task != null && !task.isCancelled();
@@ -71,9 +61,9 @@ public class VLAService {
 
             System.out.println("DADOS RECEBIDOS:");
             System.out.println("Timestamp: " + sensors.getTimestamp());
-            System.out.println("Altitude (Altímetro): " + sensors.getAltimetro().getAltitude());
 
             VLAEntity entity = VLAEntity.builder()
+                    .lancamento(lancamentoAtual)
                     .altitude(sensors.getAltimetro().getAltitude())
                     .pressure(sensors.getAltimetro().getPressure())
                     .accX(sensors.getAcelerometro().getAccX())
@@ -101,15 +91,10 @@ public class VLAService {
                     .timestamp(sensors.getTimestamp().floatValue())
                     .build();
 
-
-            VLAEntity savedEntity = sensorRepository.save(entity);
-
-            if (idSensorInicial == null) {
-                idSensorInicial = savedEntity.getId();
-            }
-            idSensorFinal = savedEntity.getId();
+            sensorRepository.save(entity);
         } catch (Exception e) {
             System.err.println("Erro ao buscar ou salvar dados do sensor: " + e.getMessage());
         }
     }
 }
+

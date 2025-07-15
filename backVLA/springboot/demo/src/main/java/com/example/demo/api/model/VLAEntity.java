@@ -1,5 +1,6 @@
 package com.example.demo.api.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -17,6 +18,11 @@ public class VLAEntity {
     @SequenceGenerator(name = "sensorSequence", sequenceName = "SEQ_SENSORES", allocationSize = 1)
     @Column(name = "ID")
     private Integer id;
+
+    @ManyToOne
+    @JoinColumn(name = "ID_LANCAMENTO")
+    @JsonBackReference
+    private LancamentoEntity lancamento;
 
     // Altímetro
     @Column(name = "ALTITUDE")
