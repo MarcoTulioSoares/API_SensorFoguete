@@ -9,5 +9,6 @@ import lombok.*;
 @Builder
 public class VLADTO {
     private SensorsDTO sensors;
+    private Long timestamp;
 
 }
