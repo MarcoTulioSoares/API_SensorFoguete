@@ -72,7 +72,7 @@ public class VLAService {
             var sensors = dto.getSensors();
 
             System.out.println("DADOS RECEBIDOS:");
-            System.out.println("Timestamp: " + sensors.getTimestamp());
+            System.out.println("Timestamp: " + dto.getTimestamp());
 
             VLAEntity entity = VLAEntity.builder()
                     .lancamento(lancamentoAtual)
@@ -100,7 +100,7 @@ public class VLAService {
                     .gpsSecond(sensors.getGps().getSecond())
                     .espNowChannel(sensors.getEsp_now_channel())
                     .macAddress(sensors.getMac_address())
-                    .timestamp(sensors.getTimestamp().floatValue())
+                    .timestamp(dto.getTimestamp().floatValue())
                     .build();
 
             sensorRepository.save(entity);

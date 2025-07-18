@@ -15,6 +15,5 @@ public class SensorsDTO {
     private GPSDTO gps;
     private Integer esp_now_channel;
     private String mac_address;
-    private Long timestamp;
     private LancamentoEntity lancamento;
 }
