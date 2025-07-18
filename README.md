@@ -1,6 +1,7 @@
 # 🔧 Projeto VLA – Aquisição e Armazenamento de Dados de Sensor
 
 Este projeto consiste em uma **API desenvolvida com Spring Boot** responsável por coletar e armazenar dados de sensores via requisições HTTP, juntamente com um **servidor Python** que simula um dispositivo físico (como um ESP) enviando dados a cada 100ms em formato JSON.
+Por padrão, a API Spring Boot escuta na porta **8089**.
 
 ---
 
@@ -25,6 +26,7 @@ Este projeto consiste em uma **API desenvolvida com Spring Boot** responsável p
 ### Inicialização
 
 Executar o "DemoApplication" no Intellij
+Ao iniciar, a API estará acessível em `http://localhost:8089`.
 
 ## 🤖 Simulador de Sensor - Python
 Descrição
